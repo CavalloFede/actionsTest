@@ -18,27 +18,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - run: mkdir -p path/to/${{ github.event.inputs.environment }}
-      - run: echo hello > path/to/${{ github.event.inputs.environment }}.txt
+      - name: Create directory
+        run: mkdir -p ${{ github.workspace }}/path/to/${{ github.event.inputs.environment }}
+      - name: Create file
+        run: echo hello > ${{ github.workspace }}/path/to/${{ github.event.inputs.environment }}.txt
       - name: Display values
-        run: |
-          cd path/to/${{ github.event.inputs.environment }}
-          ls
-  upload-artifacts:
+        run: ls -R ${{ github.workspace }}/path/to/
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact
+          path: ${{ github.workspace }}/path/to
+          retention-days: 90
+
+  download-artifacts:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - uses: actions/upload-artifact@v4
-        with:
-          name: my-artifact
-          path: path/to/${{ github.event.inputs.environment }}
-          retention-days: 90
-  download-artifacts:
-    runs-on: ubuntu-latest
-    needs: upload-artifacts
-    steps:
-      - uses: actions/download-artifact@v4
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
         with:
           name: my-artifact
       - name: Display structure of downloaded files
-        run: ls -R
+        run: ls -R ${{ github.workspace }}/path/to
