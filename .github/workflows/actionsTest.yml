@@ -2,30 +2,27 @@ name: Manual Action
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'The environment to deploy to'
+        required: true
+        default: 'prod'
+        type: choice
+        options:
+          - prod
+          - sales
+          - sales-staging
+          - sales-b
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
+      
       - name: Set up environment
         run: |
-          mkdir -p ${{ github.workspace }}/output
-
-      - name: Manual input
-        run: |
-          echo "¿Qué valores deseas ingresar?"
-          read -p "Valor 1: " value1
-          read -p "Valor 2: " value2
-          read -p "Valor 3: " value3
-
-          echo "Valor 1: $value1" > ${{ github.workspace }}/output/values.txt
-          echo "Valor 2: $value2" >> ${{ github.workspace }}/output/values.txt
-          echo "Valor 3: $value3" >> ${{ github.workspace }}/output/values.txt
-
+          mkdir -p ${{ github.event.inputs.environment }}/output
       - name: Display values
         run: |
-          cat ${{ github.workspace }}/output/values.txt
+          ls
