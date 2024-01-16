@@ -18,11 +18,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      ACTION_NAME: ''
+
     steps:
       - name: Check Authorized User
         run: |
           authorized_users="${{ secrets.AUTHORIZED_USERS }}"
-          
+
           IFS=',' read -ra users <<< "$authorized_users"
           authorized=false
 
@@ -39,11 +42,11 @@ jobs:
           fi
       - name: Set action_name variable
         run: |
-          case "${{ github.event.inputs.environment }}" in
-            "prod")
+          case "$GITHUB_JOB" in
+            *prod)
               export ACTION_NAME="Acción 1"
               ;;
-            "sales" | "sales-staging" | "sales-b")
+            *sales* | *sales-staging* | *sales-b*)
               export ACTION_NAME="Otro Nombre de Acción"
               ;;
             *)
@@ -82,10 +85,6 @@ jobs:
       - name: Set output variable
         id: set-output
         run: echo "::set-output name=artifact_name::my-artifact"
-
-
-
-
 # La variable github.actor en GitHub Actions te da el nombre del usuario
 # que está activando el flujo de trabajo. Sin embargo, no necesitas
 # definir explícitamente quiénes son los "authorized users" en el código
