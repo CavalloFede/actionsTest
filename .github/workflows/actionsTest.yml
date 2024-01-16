@@ -23,7 +23,7 @@ jobs:
       - name: Create file
         run: echo hello > ${{ github.workspace }}/path/to/${{ github.event.inputs.environment }}/test.txt
       - name: Display values
-        run: ls -R ${{ github.workspace }}/path/to/
+        run: ls -R ${{ github.workspace }}/path/to/${{ github.event.inputs.environment }}
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -40,4 +40,4 @@ jobs:
         with:
           name: my-artifact
       - name: Display structure of downloaded files
-        run: ls -R ${{ github.workspace }}/path/to
+        run: ls -R ${{ github.workspace }}/
