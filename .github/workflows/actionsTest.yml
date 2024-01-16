@@ -17,7 +17,30 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
+      - name: Check if allowed user
+        run: |
+          if [[ "${{ github.actor }}" != "authorized-user" ]]; then
+            echo "This workflow can only be run by authorized-user."
+            exit 1
+          fi
+      - name: Verificar ejecución de Acción 1
+        run: |
+          api_response=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs?&status=success")
+            
+          last_run_status=$(echo "$api_response" | jq -r '.workflow_runs | sort_by(.created_at) | reverse | .[0] | select(.name == "Acción 1").conclusion')
+
+          echo "Resultado de la API:"
+          echo "$last_run_status"
+
+          if [ "$last_run_status" == "success" ]; then
+            echo "Acción 1 se ejecutó exitosamente. Puedes ejecutar Acción 2."
+          else
+            echo "Acción 1 no se ejecutó correctamente o no hay ejecuciones anteriores exitosas. No se ejecutará Acción 2."
+            exit 1
+          fi
       - name: Create directory
         run: mkdir -p ${{ github.workspace }}/path/to/${{ github.event.inputs.environment }}
       - name: Create file
@@ -30,14 +53,32 @@ jobs:
           name: my-artifact
           path: ${{ github.workspace }}/path/to/
           retention-days: 90
+# La variable github.actor en GitHub Actions te da el nombre del usuario
+# que está activando el flujo de trabajo. Sin embargo, no necesitas
+# definir explícitamente quiénes son los "authorized users" en el código
+# del flujo de trabajo. Más bien, debes configurar las restricciones en
+# la configuración de tu repositorio o en tu organización.
 
-  download-artifacts:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: my-artifact
-      - name: Display structure of downloaded files
-        run: ls -R ${{ github.workspace }}/
+# GitHub Actions proporciona configuraciones a nivel de repositorio y
+# organización para controlar quién puede ejecutar ciertos flujos de trabajo.
+# Puedes configurar estas restricciones en la configuración del repositorio o en la configuración de tu organización.
+
+# Para restringir el acceso a nivel de repositorio:
+
+# En tu repositorio, haz clic en la pestaña "Settings".
+# En el menú lateral, selecciona "Actions".
+# En la sección "Workflow permissions", puedes especificar las restricciones de ejecución del flujo de trabajo.
+# Por ejemplo, puedes agregar un patrón de rama o de evento que indique cuándo
+# se permite ejecutar el flujo de trabajo. Puedes utilizar esta funcionalidad para
+# controlar quién puede activar el flujo de trabajo basándote en patrones específicos.
+
+#  Para restringir el acceso a nivel de organización:
+
+# Si estás trabajando en una organización, ve al panel de configuración de la organización.
+# En el menú lateral, selecciona "Settings".
+# En "Member privileges", busca la sección de "Actions".
+# Configura las restricciones de ejecución del flujo de trabajo según tus necesidades.
+
+# Esto te permitirá controlar quién puede activar flujos de trabajo en tu repositorio u organización.
+
+# Recuerda que estas configuraciones de permisos se deben establecer en el nivel de GitHub y no en el archivo YAML del flujo de trabajo.
