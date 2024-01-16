@@ -5,6 +5,8 @@ on:
     workflows: ["Auto Workflow"]
     types:
       - completed
+  workflow_dispatch:
+
 
 jobs:
   manual-job:
