@@ -53,6 +53,7 @@ jobs:
           esac
       - name: Revisar ejecuciones exitosas de $ACTION_NAME
         run: |
+          echo "$ACTION_NAME"
           api_response=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/actions/runs?&status=success")
             
@@ -67,6 +68,7 @@ jobs:
             echo "$ACTION_NAME no se ejecutó correctamente o no hay ejecuciones anteriores exitosas. No se ejecutará Acción 2."
             exit 1
           fi
+
       - name: Create directory
         run: mkdir -p ${{ github.workspace }}/path/to/${{ github.event.inputs.environment }}
       - name: Create file
