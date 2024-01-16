@@ -45,7 +45,7 @@ jobs:
           case "${{ github.event.inputs.environment }}" in
             "prod")
               export ACTION_NAME="Acción 1"
-              echo 'hola'
+              echo "$ACTION_NAME"
               ;;
             "sales" | "sales-staging" | "sales-b")
               export ACTION_NAME="Otro Nombre de Acción"
