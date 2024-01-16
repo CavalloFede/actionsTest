@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - run: mkdir -p path/to/${{ github.event.inputs.environment }}
-      - run: echo hello > path/to/artifact/${{ github.event.inputs.environment }}.txt
+      - run: echo hello > path/to/${{ github.event.inputs.environment }}.txt
       - name: Display values
         run: |
           ls
