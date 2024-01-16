@@ -21,14 +21,14 @@ jobs:
       - name: Create directory
         run: mkdir -p ${{ github.workspace }}/path/to/${{ github.event.inputs.environment }}
       - name: Create file
-        run: echo hello > ${{ github.workspace }}/path/to/${{ github.event.inputs.environment }}.txt
+        run: echo hello > ${{ github.workspace }}/path/to/${{ github.event.inputs.environment }}/test.txt
       - name: Display values
         run: ls -R ${{ github.workspace }}/path/to/
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: my-artifact
-          path: ${{ github.workspace }}/path/to
+          path: ${{ github.workspace }}/path/to/
           retention-days: 90
 
   download-artifacts:
