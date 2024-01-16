@@ -1,10 +1,6 @@
 name: Acción 2
 
 on:
-  workflow_run:
-    workflows: ["Acción 1"]
-    types:
-      - completed
   workflow_dispatch:
     inputs:
       run-action2:
@@ -17,9 +13,13 @@ jobs:
     steps:
       - name: Verificar ejecución de Acción 1
         run: |
-          if [ "${{ github.event.workflow_run.conclusion }}" == "success" ]; then
+          last_run_status=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs?event=workflow_dispatch&status=success" \
+            | jq -r '.workflow_runs[] | select(.name == "Acción 1").conclusion')
+
+          if [ "$last_run_status" == "success" ]; then
             echo "Acción 1 se ejecutó exitosamente. Puedes ejecutar Acción 2."
           else
-            echo "Acción 1 no se ejecutó correctamente. No se ejecutará Acción 2."
+            echo "Acción 1 no se ejecutó correctamente o no hay ejecuciones anteriores exitosas. No se ejecutará Acción 2."
             exit 1
           fi
