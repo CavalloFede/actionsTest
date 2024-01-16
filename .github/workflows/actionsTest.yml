@@ -19,10 +19,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check if allowed user
+      - name: Check Authorized User
         run: |
-          if [[ "${{ github.actor }}" != "authorized-user" ]]; then
-            echo "This workflow can only be run by authorized-user."
+          authorized_users="${{ secrets.AUTHORIZED_USERS }}"
+          
+          IFS=',' read -ra users <<< "$authorized_users"
+          authorized=false
+
+          for user in "${users[@]}"; do
+            if [[ "$user" == "${GITHUB_ACTOR}" ]]; then
+              authorized=true
+              break
+            fi
+          done
+
+          if [ "$authorized" != true ]; then
+            echo "This workflow can only be run by authorized users."
             exit 1
           fi
       - name: Set action_name variable
@@ -70,6 +82,10 @@ jobs:
       - name: Set output variable
         id: set-output
         run: echo "::set-output name=artifact_name::my-artifact"
+
+
+
+
 # La variable github.actor en GitHub Actions te da el nombre del usuario
 # que está activando el flujo de trabajo. Sin embargo, no necesitas
 # definir explícitamente quiénes son los "authorized users" en el código
@@ -89,7 +105,7 @@ jobs:
 # se permite ejecutar el flujo de trabajo. Puedes utilizar esta funcionalidad para
 # controlar quién puede activar el flujo de trabajo basándote en patrones específicos.
 
-#  Para restringir el acceso a nivel de organización:
+# Para restringir el acceso a nivel de organización:
 
 # Si estás trabajando en una organización, ve al panel de configuración de la organización.
 # En el menú lateral, selecciona "Settings".
