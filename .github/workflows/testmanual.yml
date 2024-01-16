@@ -1,17 +1,25 @@
-name: Manual Workflow
+name: Acción 2
 
 on:
   workflow_run:
-    workflows: ["Auto Workflow"]
+    workflows: ["Acción 1"]
     types:
       - completed
   workflow_dispatch:
-
+    inputs:
+      run-action2:
+        description: 'Ejecutar Acción 2'
 
 jobs:
-  manual-job:
+  job2:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' && success()
+
     steps:
-      - name: Manual Job Step
-        run: echo "This is the manual job, runs manually after the successful completion of Auto Workflow."
+      - name: Verificar ejecución de Acción 1
+        run: |
+          if [ "${{ github.event.workflow_run.conclusion }}" == "success" ]; then
+            echo "Acción 1 se ejecutó exitosamente. Puedes ejecutar Acción 2."
+          else
+            echo "Acción 1 no se ejecutó correctamente. No se ejecutará Acción 2."
+            exit 1
+          fi

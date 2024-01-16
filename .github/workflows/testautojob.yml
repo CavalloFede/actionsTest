@@ -1,4 +1,4 @@
-name: Auto Workflow
+name: Acción 1
 
 on:
   push:
@@ -6,9 +6,9 @@ on:
       - main
 
 jobs:
-  auto-job:
+  job1:
     runs-on: ubuntu-latest
-    steps:
-      - name: Auto Job Step
-        run: echo "This is the auto job, runs on every push."
 
+    steps:
+      - name: Ejecutar tarea 1
+        run: echo "Tarea 1 ejecutada exitosamente"
