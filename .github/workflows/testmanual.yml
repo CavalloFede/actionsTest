@@ -1,0 +1,15 @@
+name: Manual Workflow
+
+on:
+  workflow_run:
+    workflows: ['Auto Workflow']
+    types:
+      - completed
+
+jobs:
+  manual-job:
+    runs-on: ubuntu-latest
+    if: ${{ success() }}
+    steps:
+      - name: Manual Job Step
+        run: echo "This is the manual job, runs manually after the successful completion of Auto Workflow."
