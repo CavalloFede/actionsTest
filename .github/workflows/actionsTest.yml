@@ -19,10 +19,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      
-      - name: Set up environment
-        run: |
-          mkdir -p ${{ github.event.inputs.environment }}/output
+      - run: mkdir -p path/to/${{ github.event.inputs.environment }}
+      - run: echo hello > path/to/artifact/${{ github.event.inputs.environment }}.txt
       - name: Display values
         run: |
           ls
+  upload-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact
+          path: path/to/${{ github.event.inputs.environment }}
+          retention-days: 90
+  download-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: my-artifact
+      - name: Display structure of downloaded files
+        run: ls -R
