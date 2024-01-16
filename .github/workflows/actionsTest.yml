@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'The environment to deploy to'
+        description: "The environment to deploy to"
         required: true
-        default: 'prod'
+        default: "prod"
         type: choice
         options:
           - prod
@@ -19,12 +19,13 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      ACTION_NAME: ''
+      ACTION_NAME: ""
+
     steps:
       - name: Check Authorized User
         run: |
           authorized_users="${{ secrets.AUTHORIZED_USERS }}"
-          
+
           IFS=',' read -ra users <<< "$authorized_users"
           authorized=false
 
@@ -41,10 +42,10 @@ jobs:
           fi
       - name: Set action_name variable
         run: |
-          echo "${{ github.event.inputs.environment }}"
           case "${{ github.event.inputs.environment }}" in
             "prod")
               export ACTION_NAME="Acción 1"
+              echo 'hola'
               ;;
             "sales" | "sales-staging" | "sales-b")
               export ACTION_NAME="Otro Nombre de Acción"
@@ -87,10 +88,6 @@ jobs:
       - name: Set output variable
         id: set-output
         run: echo "::set-output name=artifact_name::my-artifact"
-
-
-
-
 # La variable github.actor en GitHub Actions te da el nombre del usuario
 # que está activando el flujo de trabajo. Sin embargo, no necesitas
 # definir explícitamente quiénes son los "authorized users" en el código
