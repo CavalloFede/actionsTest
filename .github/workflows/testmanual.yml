@@ -14,5 +14,5 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:
-          name: ${{ needs.produce-artifact.outputs.artifact_name }}
+          name: my-artifact
           path: path/to/destination
